@@ -10,6 +10,9 @@ import SwiftUI
 struct RecipeDetailView: View {
     
     var recipe:Recipe
+    @EnvironmentObject var model:RecipeModel
+    
+    @State var selectedServingSize = 2
     
     var body: some View {
         
@@ -22,6 +25,33 @@ struct RecipeDetailView: View {
                     .resizable()
                     .scaledToFill()
                 
+                Text(recipe.name)
+                    .bold()
+                    .font(.largeTitle)
+                    .padding()
+                
+                
+                //MARK: Serving Size Picker
+                
+                VStack (alignment: .leading){
+                    Text("Select your Serving Size:")
+                    
+                    GeometryReader { geo in
+                        Picker("Picker", selection: $selectedServingSize){
+                            Text("2").tag(2)
+                            Text("4").tag(4)
+                            Text("6").tag(6)
+                            Text("8").tag(8)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .frame(width: geo.size.width*0.5)
+                    }
+                    
+                }
+                .padding()
+                
+                
+                
                 // MARK: Ingredients
                 VStack(alignment: .leading) {
                     Text("Ingredients")
@@ -29,10 +59,10 @@ struct RecipeDetailView: View {
                         .padding([.bottom, .top], 5)
                     
                     ForEach (recipe.ingredients) { item in
-                        Text("• " + item.name)
+                        Text("• " + RecipeModel.getPortion(ingredient: item, recipeServings: recipe.servings, targetServings: selectedServingSize) + " " + item.name.lowercased())
                     }
                 }
-                .padding(.horizontal)
+                .padding()
                 
                 // MARK: Divider
                 Divider()
@@ -53,7 +83,7 @@ struct RecipeDetailView: View {
             }
             
         }
-        .navigationBarTitle(recipe.name)
+      
     }
 }
 
